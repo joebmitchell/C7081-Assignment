@@ -1,5 +1,5 @@
 ---
-title: "Predicting Antimicrobial Usage from farm data"
+title: "Predicting antimicrobial usage from farm data"
 author: "Joe Mitchell"
 date: "`r Sys.Date()`"
 output: word_document

@@ -1,0 +1,130 @@
+Variable,Level,Description,Type,Coding
+sample_id,sample,Unique reference for each sample,Categorical,3 letter farm code and sample number
+farm,farm,Unique code for each farm,Categorical,3 letter code
+visit_number,sample,The visit number on which the sample was collected for each farm. Visit 1 is the date of consent and first questionnaire.,Ordinial,"1= first visit, 2= second visit etc etc"
+date_collected,sample,Date of sample collection,Date,
+ctx_m,sample,Was CTX-M detected in any isolates selected from the sample by PCR?,Binary,"1= yes, 0= no"
+animals_sampled,sample,"Category of animals present in the location, also presented as dichotomous variables below",Categorical," ""a""= milking cattle, ""d""= dry cattle, ""pw""=pre-weaned calves, ""h""=weaned heifer calves"
+weaned_heifer,sample,Were weaned heifers present in the environment sampled?,Binary,"1= yes, 0= no"
+adult,sample,Were adult milking cows present in the environment sampled?,Binary,"1= yes, 0= no"
+dry,sample,Were adult dry cows present in the environment sampled?,Binary,"1= yes, 0= no"
+footpath,sample,Was the sample taken from a public footpath?,Binary,"1= yes, 0= no"
+amp_c,sample,Was Amp-C detected in any E. coli isolates selected from the sample by PCR?,Binary,"1= yes, 0= no"
+ct_pos,sample,Was cefotaxime resistance detected in any E. coli isolates selected from the sample (ie growth on agar containing cefotaxime at above the breakpoint)?,Binary,"1= yes, 0= no"
+cipR,sample,Were ciprofloxacin resistant E. coli detected in the sample?,Binary,"1= yes, 0= no"
+tetR,sample,Were tetracycline resistant E. coli detected in the sample?,Binary,"1= yes, 0= no"
+cephR,sample,Were cephalexin resistant E. coli detected in the sample?,Binary,"1= yes, 0= no"
+strepR,sample,Were streptomycin resistant E. coli detected in the sample?,Binary,"1= yes, 0= no"
+amoxR,sample,Were amoxycillin resistant E. coli detected in the sample?,Binary,"1= yes, 0= no"
+plain_undiluted,sample,Total E. coli count in the plated sample on selective agar without antibiotic,Continuous,"If too many to count, 1000 colonies was entered."
+anything_waste,Farm,Are any cattle on the farm fed waste milk?,Binary,"1= yes, 0= no"
+heifers_waste,Farm,Are any heifers on the farm fed waste milk?,Binary,"1=yes, 0=no"
+whichclinresp,Farm,Which is first choice/most commonly used class of antibiotic for clinical mastitis?,Categorical,Descriptive
+firstmastitis,Farm,Which antibiotic was most commonly used for mastitis at the start of the project,Categorical,Descriptive
+poultry,Farm,Have there been poultry on the farm during the project?,Binary,"1=yes, 0=no"
+equine,Farm,Have there been equids on the farm during this project?,Binary,"1=yes, 0=no"
+total_cattle,Farm,"Total number of cattle kept on farm (averaged over study, including males/beef calves)",Ordinal,"1=<250, 2=250-500, 3=>500"
+yield,Farm,305 day yield in litres (represents average milk yield per cow per year),Ordinal,"1=<8000, 2=8000-9000, 3+>9000"
+herd_size,Farm,"Number of cows in dairy herd, averaged over the course of the study",Ordinal,"1 = <150, 2 = 150-300, 3 = >300"
+bought_pre,Farm,How many head of cattle were bought in from elsewhere in the 12 months before the start of the project?,Continuous,
+scc,Farm,Somatic cell count threshold for prophylactic dry cow therapy,Continuous,
+pneum_vacc,Farm,Are the heifers routinely vaccinated against pneumonia?,Binary,"1=yes, 0=no"
+diarrvacc,Farm,"Are the heifers routinely vaccinated against diarrhoea, eg with Rotavec? ",Binary,"Y= yes, N=no"
+anticocc,Farm,Are the heifers routinely give preventive anticoccidial treatments?,Binary,"1=yes, 0=no"
+halocur,Farm,Is Halocur routinely used as a cryptosporidium preventative?,Binary,"1=yes, 0=no"
+nsaiddiarr,Farm,Are NSAID's routinely used in clinical cases of calf diarrhoea?,Binary,"1=yes, 0=no"
+trough_clean,Farm,How often are water troughs cleaned for the pre weaned calves?,Ordinal,"1= daily, 2= less often"
+time_dam,Farm,How long do calves usually stay with their dams after birth?,Ordinal,"1= less than 24 hours, 2= more than 24 hours"
+um_spray,Farm,Do you dip or spray the umbilicus after birth?,Binary,"1= yes, 0= no"
+give_col,Farm,Is colostrum routinely given within the first six hours by a member of staff?,Binary,"1=yes, 0=no"
+wean,Farm,When are calves usually weaned?,Categorical,"1= less than 10 weeks, 2= greater than 10 weeks, 3=do on weight"
+pattern,Farm,Is the calving pattern seasonal or all year?,Categorical,"1= seasonal, 2= most of year"
+percentdryoff,Farm,Average percentage of cows given prophylactic dry cow therapy antibiotics over the course of the study.,Continuous,
+calving_group,Farm,Are calves usually born in a group pen?,Categorical,"1=yes, 0=no"
+calf_housing_type,Farm,What housing types have calves been kept in since the start of the study?,Categorical,"1= individual pens, 2= group pens, 3= both"
+calf_housing_older,Farm,Have calves been kept with older animals?,Categorical,"0= no, 1= yes"
+hectares,Farm,How many hectares of land on the holding?  Converted from acres by 0.4xacre where needed,Continuous,
+othergraze,Farm,Do cows graze at sites other than the main farm?,Binary,"Y= yes, N=no"
+bvdvacc,Farm,Are cows routinely vaccinated against BVD?,Binary,"Y= yes, N=no"
+ibrvacc,Farm,Are cows routinely vaccinated against Infectious Bovine Rhinotracheitis?,Binary,"Y= yes, N=no"
+leptovacc,Farm,Are cows routinely vaccinated against Leptospirosis?,Binary,"Y= yes, N=no"
+salmvacc,Farm,Are cows routinely vaccinated against Salmonella?,Binary,"Y= yes, N=no"
+lungvacc,Farm,Are cows routinely vaccinated against lungworm (eg with Huskvac)?,Binary,"Y= yes, N=no"
+clostvacc,Farm,Are cows routinely vaccinated against clostridial disease (eg Blackleg/7 in 1)?,Binary,"Y= yes, N=no"
+organic,Farm,Is the farm organic?,Binary,"1= yes, 0= no"
+daystreatmast,Farm,How many days are routine mastitis cases treated for with the first choice treatment?,Continuous,
+timesfirstmast,Farm,How many times a day is the first choice treatment for mastitis given?,Binary,
+injectmast,Farm,What percentage of clinical mastitis cases are given injectable antibiotics?,Continuous,
+nsaidmast,Farm,What percentage of clinical mastitis cases receive NSAID’s?,Continuous,
+treatfoot,Farm,Do you routinely use a footbath to treat outbreaks of lameness?,Binary,"1= yes, 0= no"
+abcalve,Farm,Do you routinely use antibiotics following a difficult calving?,Binary,"1= yes, 0= no"
+nsaidcalve,Farm,Do you routinely give NSAID’s after a difficult calving?,Binary,"1= yes, 0= no"
+calveclean,Farm,How often are the calving areas cleaned?,Ordinal,"1= monthly or less, 2= more often than monthly"
+milkgraze,Farm,Do your milking cows graze?,Binary,"1= yes, 0= no"
+lime,Farm,Do you use lime to cleanse housing areas?,Binary,"1= yes, 0= no"
+predip,Farm,Are teats routinely treated with predip before milking?,Binary,"1= always, 0=not always"
+acf,Farm,Do you have automatic cluster flushing?,Binary,"1= yes, 0= no"
+cleancluster,Farm,How often is the milking cluster cleaned?,Ordinal,"1= less often, 2= between groups or animals"
+drytrough,Farm,How often are water troughs cleaned for the dry cows?,Ordinal,"1= less than monthly, 2= at least monthly"
+premises,Farm,"How many premises does the farm occupy, excluding grazing?",Binary,"1=1, 2= more than 1"
+shows,Farm,Do you take your cattle to shows?,Binary,"1= yes, 0= no"
+market,Farm,Do you sell stock at market?,Binary,"1= yes, 0= no"
+hostfarmwalk,Farm,Have you hosted a farm walk in the last few years?,Binary,"1= yes, 0= no"
+starling,Farm,How often are starlings seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+deer,Farm,How often are deer seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+badger,Farm,How often are badgers seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+rook,Farm,How often are rooks seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+pigeon,Farm,How often are pigeons seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+fox,Farm,How often are foxes seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+pheasant,Farm,How often are pheasant seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+rat,Farm,How often are rats seen on the farm?,Binary,"1= occasionally, rarely or never, 2= more often"
+shoot,Farm,Do shoots cross your land? (how is shoot defined eg do you allow people to shoot on your land?)?,Binary,"1=rarely or never, 2= more often"
+hunt,Farm,Do hunts cross your land?,Binary,"1=rarely or never, 2= more often"
+outsource,Farm,Are calves/heifers outsourced at any point (i.e taken elsewhere for rearing)?,Binary,"1= yes, 0= no"
+feedlorry,Farm,Do feed lorries have to go through the yard when delivering?,Binary,"1= yes, 0= no"
+muckspreader,Farm,Does the farm use a contract muck spreader?,Binary,"1= yes, 0= no"
+aiexterl,Farm,Is an external company brought in to artificially inseminate cows?,Binary,"1= yes, 0= no"
+machinery,Farm,Is machinery shared with other farms?,Binary,"1= yes, 0= no"
+bedmilk_1,Farm,Is sand used in milking cow bedding?,Binary,"yes= yes, no=no"
+bedmilk_2,Farm,Is straw used in milking cow bedding?,Binary,"yes= yes, no=no"
+bedmilk_3,Farm,Is sawdust used in milking cow bedding?,Binary,"yes= yes, no=no"
+bedmilk_4,Farm,Is paper waste used in milking cow bedding?,Binary,"yes= yes, no=no"
+bedmilk_6,Farm,Is ‘green bedding’ used in milking cow bedding?,Binary,"yes= yes, no=no"
+bedmilk_8,Farm,Is the milking cow bedding type unknown?  ,Binary,"yes= yes, no=no"
+foragetype_1,Farm,Is clamp grass silage used in feeding?,Binary,"yes= yes, no=no"
+foragetype_2,Farm,Is big bale grass silage used in feeding?,Binary,"yes= yes, no=no"
+foragetype_3,Farm,Is maize silage used in feeding?,Binary,"yes= yes, no=no"
+foragetype_4,Farm,Is whole crop silage used in feeding?,Binary,"yes= yes, no=no"
+foragetype_5,Farm,Is hay used in feeding?,Binary,"yes= yes, no=no"
+foragetype_6,Farm,Is straw used in feeding?,Binary,"yes= yes, no=no"
+foragetype_7,Farm,Is haylage used in feeding?,Binary,"yes= yes, no=no"
+foragetype_8,Farm,Is other forage used in feeding?,Binary,"yes= yes, no=no"
+foragebought,Farm,Have any forages been bought from elsewhere?,Binary,"1= yes, 0= no"
+manure_1,Farm,Is a slurry lagoon used for slurry management?,Binary,"yes= yes, no=no"
+manure_2,Farm,Is a weeping wall used for slurry management,Binary,"yes= yes, no=no"
+manure_3,Farm,Is a metal slurry store used for slurry management?,Binary,"yes= yes, no=no"
+manure_4,Farm,Is a concrete slurry store used for slurry management?,Binary,"yes= yes, no=no"
+manure_5,Farm,Is a muck heap in field used for manure management?,Binary,"yes= yes, no=no"
+manure_6,Farm,Is a muck heap on concrete used for manure management?,Binary,"yes= yes, no=no"
+manure_7,Farm,Is a composter used for manure management?,Binary,"yes= yes, no=no"
+manure_8,Farm,Is a separator used for manure management?,Binary,"yes= yes, no=no"
+manure_9,Farm,Is any other manure management used?,Binary,"yes= yes, no=no"
+housed_outdoor,Sample,Is the sample collected from pastureland or housed cattle?,Binary,"""outdoor""= pastureland, ""housed""= housed areas or yards"
+cefq_dct,Farm,Has cefquinome been used for dry cow therapy during the project?,Binary,"1= yes, 0= no"
+ceph_dct,Farm,Has cephalonium been used for dry cow therapy during the project?,Binary,"1= yes, 0= no"
+fram_dct,Farm,Has framycetin been used for dry cow therapy during the project?,Binary,"1= yes, 0= no"
+clox_dct,Farm,Has cloxacillin been used for dry cow therapy during the project?,Binary,"1= yes, 0= no"
+calving_now,Sample,Did the cows represented by the sample calve within the last two months?,Binary,"1= yes, 0= no"
+water,Farm,Where does the drinking water supply for the farm come from?,Binary,"1= always mains, 0 = not always mains"
+total_mg_pcu,Farm,Total antibiotic usage in mg/ PCU,Continuous,
+ceph_3_4,Farm,Amount of third- and fourth-generation cephalosporins used in mg/PCU,Continuous,
+ceph_1,Farm,Amount of first-generation cephalosporins used in mg/PCU,Continuous,
+co_amox,Farm,"Amount of amoxicillin- clavulanic acid used in mg/PCU (should all these be ‘over the course of the study?’, ‘average per year’ or anything?",Continuous,
+tet,Farm,Amount of tetracycline used in mg/PCU,Continuous,
+amox,Farm,Amount of amoxicillin used in mg/PCU,Continuous,
+fq,Farm,Amount of fluoroquinolones used in mg/PCU,Continuous,
+novobiocin,Farm,Amount of novobiocin used in mg/PCU,Continuous,
+pen,Farm,Amount of peniciliins used in mg/PCU,Continuous,
+cefalexin,Farm,Amount of cefalexin used in mg/PCU,Continuous,
+strep,Farm,Amount of streptomycin used in mg/PCU,Continuous,
+preweaned_heifer,Sample,Were pre-weaned heifers present in the sampling location?,Binary,"1= yes, 0= no"
