@@ -4,6 +4,9 @@ author: "Joe Mitchell"
 date: "`r Sys.Date()`"
 output: word_document
 ---
+# Github Link
+
+https://github.com/joebmitchell/C7081-Assignment
 
 # 1 Background
 
