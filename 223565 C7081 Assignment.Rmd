@@ -32,9 +32,6 @@ The predictors were then reduced down, leaving 28 predictors available for inclu
 knitr::opts_chunk$set(cache = TRUE)
 
 library(tidyverse)
-library(corrplot)
-library(rcompanion) # for cramer V
-library(vcd) # for assocstats()
 library(leaps) # for regsubsets()
 library(glmnet) # for ridge regression and lasso
 library(pls) # for PCR
@@ -45,7 +42,7 @@ library(BART) # bayesian additive reg trees
 library(car) # vif
 library(knitr)
 
-dat <- read.csv("cows.csv", strip.white=T, row.names = 1)
+dat <- read.csv("cows.csv", strip.white=T, row.names = 1) # Import data from csv file
 dat <- dat %>%  # reduce to one farm
   distinct(farm, .keep_all=TRUE)
 # Step 1 -21
@@ -56,18 +53,18 @@ cols1 <- c(10,11,12,23,27,36,38:39,98)
 
 dat[-cols1] <- lapply(dat[-cols1], as.factor) # set factor columns to factors
 
-#sapply(dat[,-cols1], table) # check number of observations in each factor level
+sapply(dat[,-cols1], table) # check number of observations in each factor level
 # If <= 5 then removed
 # Step 2 -16
 cols2 <- c(3,4,24,32,35,51,64,72,73,74,75,80,82,83,90,92)
 dat <- dat[,-cols2]
 
-cols3 <- c(3:6,8:11,13,15,19,20,22,24,26:33,35,36,42,55,63,81,82)
+cols3 <- c(3:6,8:11,13,15,19,20,22,24,26:33,35,36,42,55,63,81,82) # 28 predictors selected on relevance and removing duplicates and variables with collinearity. 
 
-dat <- dat[,cols3] # 28 predictors selected on relevance and removing duplicates
+dat <- dat[,cols3] 
 
 set.seed(1)
-train <- sample(1:53, 27)
+train <- sample(1:53, 27) # creating training dataset
 
 ```
 
@@ -98,11 +95,7 @@ var<- var[var$Variable %in% data_variables,]
 
 kable(var, caption = "Table 2: Variable names, Description and Factor Levels", row.names = F)
 ```
-```{r Check for collinearity, eval=FALSE, include=FALSE}
-for(i in 1:30){
-  plot(dat[,i], dat$total_mg_pcu, xlab = colnames(dat)[i])
-}
-```
+
 ## 2.2 Linear Regression
 
 As the outcome variable is a continuous variable it was decided that linear regression would be a suitable method. An initial linear model was made using all 28 variables. This model had only 1 statistically significant predictor (*daystreatmast*, p = 0.0104). The residuals for this model are shown in Figure 1 and show that the data doesn't appear to follow a Gaussian Distribution as the residuals appear to vary significantly at the extremes. 
