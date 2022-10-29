@@ -10,14 +10,13 @@ https://github.com/joebmitchell/C7081-Assignment
 
 # 1 Background
 
-Antibiotic usage in the livestock industry has been a metric by which farmers have been increasingly measured and put under pressure to reduce (Hennessey et al, 2020). This has been driven both by the need to improve animal welfare by reducing the need for antibiotics as well as reducing livestock farmings role in the development of antibiotic resistance. 
-The main metric used for measuring the usage of antibiotics on farm is 'mg/kg/PCU'. This is a measure of mg of antibiotic used per weight of animal on the farm. Calculating this metric can be difficult as working out the average weight of animals that has been on farm over the recording period is complicated to calculate correctly and collating the antibiotic usage is sometimes challenging.
+Antibiotic usage in the livestock industry has been a metric by which farmers have been increasingly measured and put under pressure to reduce (Hennessey et al, 2020). This has been mainly driven by the need to reduce livestock farming's role in the development of antibiotic resistance as part of the One Health initiative. 
+The main metric used for measuring the usage of antibiotics on farm is 'mg/PCU'. This is a measure of mg of antibiotic used per standardised weight of animal on the farm. Calculating this metric can be difficult as working out the average weight of animals that has been on farm over the recording period is complicated to calculate correctly and collating the antibiotic usage is sometimes challenging.
 
 A dataset was obtained from the Natural Environment Research Council's Environment Data Service (Reyher et al. 2021). It contains farm management information and data on antibiotic usage for 53 dairy farms in South West England.
 
 ## 1.1 Objectives 
-
-
+ 
 1. Determine the key factors linked with a high mg/PCU on farm
 2. Create a model which is accurately able to predict a farms antibiotic usage based on easily obtainable management factors
 
@@ -25,11 +24,8 @@ A dataset was obtained from the Natural Environment Research Council's Environme
 
 ## 2.1 Data
 
-The original data contained 4578 observations of 129 variables. These were composed of data from 53 individual farms and the data was collected via a questionnaire as well as individual sample information taken during the study period. The data was initially stripped of all sample information and reduced to just farm level information including management and antibiotic usage information. This left 53 observations of 108 variables. The data was checked for missing values but none were present. There was one value miscoded as a "3" when "1" or "2" were the only acceptable values so it was changed to NA.
-The predictors were then reduced down, leaving 28 predictors available for inclusion in the final model. The reasons for their removal are shown in Table 1.
-
-
-
+The original data contained 4578 observations of 129 variables. These were composed of data from 53 individual farms in the South-West of England and the data was collected via a questionnaire, prescription records from veterinary practices and sample information taken during the study period. The data was initially stripped of all sample information and reduced to just farm level information including management and antibiotic usage information. This left 53 observations of 108 variables. The data was checked for missing values but none were present. There was one value miscoded as a "3" when "1" or "2" were the only possible values so it was changed to NA.
+The predictors were then reduced, leaving 28 predictors available for inclusion in the final model. The reasons for their removal are shown in Table 1.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(cache = TRUE)
@@ -76,45 +72,49 @@ count <- c(21,10,16,51,2)
 reason <- c("Sample information", "Specific antibiotic usage", "<5 Observations per factor level", "Non-relevant predictors", "Collinearity")
 reason <- data.frame(count,reason)
 colnames(reason) <- c("Number of Predictors Removed", " Reason for removal")
-kable(reason, caption = "Table 1 :Predictor reason for removal", align = "c")
+kable(reason, caption = "Table 1 : Predictor reason for removal", align = "c")
 
 ```
 The final selection of variables available for selection in the models along with their coding is shown in Table 2.
 
-The data was fitted to a variety of models using *total_mg_pcu* as the dependent variable and all other remaining variables as the predictors. The data was split into a training data set (n = 27) and a test data set (n = 26) in order to allow for the most objective assessment of predictive power (Barnard et al. 2019). These split data models were then used to calculate Mean Squared Error (MSE) in order to provide a value for the variance between the models predictions and the test data set. Although using a split data validation approach is considered the most objective assessment of predictive power I also used cross validation and bootstrapping due to the small number of observations meaning that the split of data may lead to some biased selections.
+The data was fitted to a variety of models using *total_mg_pcu* as the dependent variable and all other remaining variables as the predictors. The data was split into a training data set (n = 27) and a test data set (n = 26) in order to allow for the most objective assessment of predictive power (Barnard et al. 2019). These split data models were then used to calculate Mean Squared Error (MSE) in order to provide a value for the variance between the models predictions and the test data set. Although using a split data validation approach is considered the most objective assessment of predictive power cross validation was also used as to the small number of observations meant that the split of data may lead to some biased selections.
 
 ```{r Variables Table, echo=FALSE}
 
 
 var <- read.csv("variable_names.csv", header = TRUE)
-var <- var[,c(1,3,5)]
-col.name <- colnames(var)
-col.name[1] <- "Variable"
+var <- var[,c(1,3,5)] # select only relevent columns
+col.name <- colnames(var) # create vector of column names
+col.name[1] <- "Variable" # give more accurate column names
 col.name[3] <- "Factor Levels"
-colnames(var) <- col.name
-rownames(var) <- c()
+colnames(var) <- col.name # set column names
+rownames(var) <- c() # remove rownames
 data_variables <-colnames(dat)
-var<- var[var$Variable %in% data_variables,]
+var<- var[var$Variable %in% data_variables,] # include only variables selected for inculsion in final analysis
 
-kable(var, caption = "Table 2: Variable names, Description and Factor Levels", row.names = F)
+kable(var, caption = "Table 2: Variable names, Description and Factor Levels", row.names = F) # create table
 ```
 
 ## 2.2 Linear Regression
 
-As the outcome variable is a continuous variable it was decided that linear regression would be a suitable method. An initial linear model was made using all 28 variables. This model had only 1 statistically significant predictor (*daystreatmast*, p = 0.0104). The residuals for this model are shown in Figure 1 and show that the data doesn't appear to follow a Gaussian Distribution as the residuals appear to vary significantly at the extremes. 
+As the outcome variable is a continuous variable it was decided to use multiple linear regression. An initial multiple linear model was made using 30 variables (still included 2 variables removed for collinearity) and all observations. The GVIF values for the predictors were calculated and 2 variables removed as they were greater than 5.
+
+The model was then remade using the final 28 predictors. The residuals for this model are shown in Figure 1 and show that there is significant variation in residuals especially at the extremes of the data.
  
 ```{r LM, include=FALSE}
-lm.train <- lm(total_mg_pcu~., data = dat, subset = train)
-predictions <- predict(lm.train, newdata = dat[-train,])
-plot(predictions, dat$total_mg_pcu[-train])
+lm.train <- lm(total_mg_pcu~., data = dat, subset = train) # create linear model using training dataset
+predictions <- predict(lm.train, newdata = dat[-train,]) # generate predictions of test dataset
+plot(predictions, dat$total_mg_pcu[-train]) # visualise predictions
 
-summary(lm.train)
+summary(lm.train) # view lm statistics 
 
-MSE <- mean((dat$total_mg_pcu[-train]-predictions)^2)
-MSE # 3851.4
+mean((dat$total_mg_pcu[-train]-predictions)^2) # calculate MSE
+#MSE  2401.0
 
-lmo <-lm(total_mg_pcu~., data = dat)
-summary(lmo)
+lmo <-lm(total_mg_pcu~., data = dat) # remade model using all data that would be used for further validation on new dataset
+
+lmo_pred <- predict(lmo, dat)
+plot(lmo_pred, dat$total_mg_pcu)
 
 ```
 
@@ -125,31 +125,32 @@ par(mfrow = c(1,1))
 
 ```
 
-The GVIF values for the model were then calculated and inspected. Using a threshold of 5 only four predictors were above the threshold. The two highest predictors were removed from the dataset and the model recreated using all remaining variables.The two remaining predictors with GVIF of over 5 were factors with more than 1 degree of freedom. Their $GVIV^^(1/(2*Df))$ was compared to a threshold of $10^^(1/(2*Df))$. As they have 2 degrees of freedom they were both below the new threshold of 1.778.
+The GVIF values for the model were then calculated and are shown in Figure 2. Using a threshold of 5 only two predictors were above the threshold. The two predictors with GVIF of over 5 were factors with more than 1 degree of freedom. Their $GVIV^^(1/(2*Df))$ was compared to a threshold of $10^^(1/(2*Df))$ (Fox and Weisberg, 2011). As they have 2 degrees of freedom they were both below the relevant threshold of 1.778.
 
 ```{r vif, echo=FALSE, fig.cap="Figure 2: Top 10 GVIF Values", fig.height=5, fig.width=8}
-vif_val <- data.frame(vif(lmo))
-vif_val <- vif_val[order(-vif_val$GVIF),]
-vif_val <- vif_val[1:10,]
-par(mar=c(5,10,4,1))
-barplot(vif_val[,1], horiz = T, col = "steelblue", names.arg = rownames(vif_val), las = 2, xlab = "GVIF", xlim = c(0,9))
-abline(v = 5)
+vif_val <- data.frame(vif(lmo)) # calculate vif values
+vif_val <- vif_val[order(-vif_val$GVIF),] # order them
+vif_val <- vif_val[1:10,] # select 10 largest values
+par(mar=c(5,10,4,1)) # increase plot size
+barplot(vif_val[,1], horiz = T, col = "steelblue", names.arg = rownames(vif_val), las = 2, xlab = "GVIF", xlim = c(0,10))
+abline(v = 5, col = "red") # add line at threshold
 ```
+A multiple regression model was then created using the training dataset and predictions generated using the test data to calculate a MSE. As this split data now included less observations than predictors the model created had 0 degrees of freedom.
 
 ## 2.3 Subset Selection
 
 Subset selection was then performed on the data in order to select the optimal subset of variables to include in a model. The regsubsets() function from the {leaps} package was used to perform the subset section. The three methods used were best subset, forward selection and backward selection. Test/Train data spliting was utilised for each subset selection as in the linear model. In addition Cross validation using k-fold cross validation was used for all 3 methods of subset selection using k= 10. This was performed as Xu and Goodacre (2018) have suggested that this can be a more accurate measure of performance in smaller datasets.  
 
 ```{r best subset train, include=FALSE}
-regfit.full <- regsubsets(total_mg_pcu ~ ., dat[train,],
-                          nvmax = 25) # reduced to 25 for speed 
-test.mat <- model.matrix(total_mg_pcu ~., data = dat[-train, ])
-val.errors.BT <- rep(NA,25)
+regfit.full <- regsubsets(total_mg_pcu ~ ., dat[train,], # create best subset model with training data
+                          nvmax = 28) 
+test.mat <- model.matrix(total_mg_pcu ~., data = dat[-train, ]) # create matrix of test values
+val.errors.BT <- rep(NA,25) 
 #create vector with MSE for different model sizes
 for(i in 1:25){
   coefi <- coef(regfit.full, id = i)
   pred <- test.mat[,names(coefi)]%*%coefi
-  val.errors.BT[i] <- mean((dat$total_mg_pcu[-train]-pred)^2)
+  val.errors.BT[i] <- mean((dat$total_mg_pcu[-train]-pred)^2) # calculate MSE for different sized models
 }
 
 x <- which.min(val.errors.BT) # find best model by lowest MSE
@@ -167,7 +168,7 @@ plot(val.errors.BT, type = 'b', # plot all MSE's
 
 ```{r regsubsets FWD, include=FALSE}
 fwd.regfit.full <- regsubsets(total_mg_pcu ~ ., dat[train,],
-                          nvmax = 25, method = "forward") # reduced to 25 for speed 
+                          nvmax = 28, method = "forward") # create forward model with training data
 test.mat <- model.matrix(total_mg_pcu ~., data = dat[-train, ])
 val.errors.FT <- rep(NA,25)
 #create vector with MSE for different model sizes
@@ -190,7 +191,7 @@ plot(val.errors.FT, type = 'b', # plot all MSE's
 
 ```{r regsubsets BWD, include=FALSE}
 bwd.regfit.full <- regsubsets(total_mg_pcu ~ ., dat[train,],
-                          nvmax = 25, method = "backward") # reduced to 25 for speed 
+                          nvmax = 28, method = "backward") # create backward subsets model with training data
 test.mat <- model.matrix(total_mg_pcu ~., data = dat[-train, ])
 val.errors.BWT <- rep(NA,25)
 #create vector with MSE for different model sizes
@@ -206,13 +207,10 @@ val.errors.BWT[x]
 plot(val.errors.BWT, type = 'b', # plot all MSE's
      pch = 16, col = 'goldenrod',
      main = "BWT")
-#Lowest MSE with 4 varibles
-# bought_pre, leptoV, days treat mast, times first mast 2
-# MSE = 285.3
+#Lowest MSE with 1 variable wean2
 
-bwd.regfit.full <- regsubsets(total_mg_pcu ~ ., dat,
-                          nvmax = 25, method = "backward")
-coef(bwd.regfit.full, 4)
+# MSE = 319.0
+
 ```
 
 ```{r predict regsubsets function, include=FALSE}
@@ -220,54 +218,47 @@ coef(bwd.regfit.full, 4)
 predict.regsubsets <- function(object, newdata, id, ...){
   form <- as.formula(object$ call[[2]]) # create formula
   mat <- model.matrix(form, newdata) # create model matrix
-  coefi <- coef(object, id = id) # get coeffiecients
-  xvars <- names(coefi)
-  mat[,xvars]%*% coefi
+  coefi <- coef(object, id = id) # get coefficients
+  xvars <- names(coefi) # create vector with coefficients names
+  mat[,xvars]%*% coefi # multiply across matrix
 }
 ```
 
 
 ```{r best regsubsets cross validation, include=FALSE}
-k <-10
+k <-10 # set k cross validation k to 10
 n <- nrow(dat)
 set.seed(1)
 folds <- sample(rep(1:k, length = n))
 
-cv.errors.BCV <- matrix(NA,k,29,dimnames  = list(NULL, paste(1:29)))
+cv.errors.BCV <- matrix(NA,k,29,dimnames  = list(NULL, paste(1:29))) # create matrix for CV errors 
 
 for(j in 1:k){
   best.fit <- regsubsets(total_mg_pcu~.,
                          data = dat[folds !=j,],
-                         nvmax = 29)
+                         nvmax = 29) # create model using cross validation dataset
   for (i in 1:29){
-    pred <- predict(best.fit, dat[folds ==j,], id = i)
-    cv.errors.BCV[j,i] <- mean((dat$total_mg_pcu[folds == j]- pred)^2)
+    pred <- predict(best.fit, dat[folds ==j,], id = i) # create predictions of outcome variable
+    cv.errors.BCV[j,i] <- mean((dat$total_mg_pcu[folds == j]- pred)^2) # calculate MSE 
   }
 }
 
-mean.cv.errors.BCV <- apply(cv.errors.BCV,2,mean)
-mean.cv.errors.BCV
-mean.cv.errors.BCV[2] # 209.5
+mean.cv.errors.BCV <- apply(cv.errors.BCV,2,mean) # calculate mean of k-fold subsets models
+x<- which.min(mean.cv.errors.BCV)
+mean.cv.errors.BCV[x] # 209.5
 plot(mean.cv.errors.BCV, type = "b",
      pch = 16, col = 'goldenrod',
      main = "BCV")
-#cross - validation selects a 4 variable model
+#cross - validation selects a 2 variable model
 # now perform best subset on full data set to obtain 4 varible model
 
-reg.best <-regsubsets(total_mg_pcu~.,
+reg.best <-regsubsets(total_mg_pcu~., # create final model using complete dataset
                          data = dat,
                          nvmax = 29)
-coef(reg.best,2)
+coef(reg.best,2) # examine variables selcted by CV
 
 #daystreatmast    injectmast 
 
-
-lm.train <- lm(total_mg_pcu~ daystreatmast *injectmast, data = dat, subset = train)
-predictions <- predict(lm.train, newdata = dat[-train,])
-plot(predictions, dat$total_mg_pcu[-train])
-summary(lm.train)
-
-MSE <- mean((dat$total_mg_pcu[-train]-predictions)^2)
 ```
 
 ```{r fwd regsubsets cross validation, include=FALSE}
@@ -289,7 +280,8 @@ for(j in 1:k){
 }
 
 mean.cv.errors.FCV <- apply(cv.errors.FCV,2,mean)
-mean.cv.errors.FCV # 209.5
+which.min(mean.cv.errors.FCV)
+mean.cv.errors.FCV[2]# 209.5
 plot(mean.cv.errors.FCV, type = "b",
      pch = 16, col = 'goldenrod')
 #cross - validation selects a 2 variable model
@@ -323,11 +315,11 @@ for(j in 1:k){
 
 mean.cv.errors.BWCV <- apply(cv.errors.BWCV,2,mean)
 mean.cv.errors.BWCV
-mean.cv.errors.BWCV[3] # 275.3
+mean.cv.errors.BWCV[3] # 237.8
 plot(mean.cv.errors.BWCV, type = "b",
      pch = 16, col = 'goldenrod')
 #cross - validation selects a  variable model
-# now perform best subset on full data set to obtain 
+# now perform best subset on full data set to obtain full model 
 
 reg.best <-regsubsets(total_mg_pcu~.,
                          data = dat,
@@ -368,7 +360,7 @@ par(mfrow = c(1,1))
 
 ## 2.4 Shrinkage Methods
 
-Ridge Regression with the glmnet() fuction from the {glmnet} package. The strength of the penalty term is controlled by the tuning parameter and in order to select the optimal value cross validation was performed. The tuning parameter was set at 65.5.
+Ridge Regression was performed with the glmnet() fuction from the {glmnet} package. The strength of the penalty term is controlled by the tuning parameter and in order to select the optimal value cross validation was performed. The tuning parameter was set at 65.5.
 
 ```{r Ridge Regression, include=FALSE}
 #data prep
@@ -395,7 +387,7 @@ bestlam <- cv.out$lambda.min
 ridge.mod <- glmnet(x[train,], y[train], alpha = 0, lambda = grid, thresh = 1e-12)
 ridge.pred <- predict(ridge.mod, s = bestlam, newx = x[test,])
 mean((ridge.pred - y.test)^2)
-#MSE 278.2
+#MSE 265.2
 
 out <- glmnet(x, y, alpha = 0)
 predict(out, type = "coefficients", s = bestlam)
@@ -410,21 +402,24 @@ plot(cv.out )
 Lasso uses L1 regularisation methods to add a penalty term to a regression model that has the effect of performing variable selection by forcing some of the coefficients to be exactly 0. The model was created with the glmnet() fuction from the {glmnet} package. Cross Validation was performed to select the value of lambda and a value of 1.4 was selected.
 
 ```{r Lasso, include=FALSE}
-lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = grid)
-plot(lasso.mod, label = T)
+lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = grid) # create lasso model with training dataset
+plot(lasso.mod, label = T) # view lasso model
 
+# cross validation to select lambda
 set.seed(1)
 cv.out<- cv.glmnet(x[train,], y[train], aplha = 1)
 plot(cv.out)
 bestlam <- cv.out$lambda.min
+
+# predicting values and calculating MSE
 lasso.pred <- predict(lasso.mod, s = bestlam, newx = x[test,])
 mean((lasso.pred-y.test)^2)
 #MSE = 244.3
 
-out <- glmnet (x, y, alpha = 1, lambda = bestlam )
+out <- glmnet (x, y, alpha = 1, lambda = bestlam ) # Making best model
 lasso.coef <- predict(out, type = "coefficients")[1:29, ]
-sort(lasso.coef^2)
-lasso.final.pred <- predict(out, newx = x)
+sort(lasso.coef^2) # viewing coefficients by effect size
+lasso.final.pred <- predict(out, newx = x) # creating predictions
 
 
 ```
@@ -440,19 +435,18 @@ plot(cv.out)
 Principle component regression is a method that applies Principle Component analysis to the data in order to perform dimension reduction in an unsupervised manor and then use the output as new regressors. The regression was performed using the pcr() function from the {pls} package. Cross Validation was performed to select the optimum number of components to include (M=5). 
 
 ```{r PCR, include=FALSE}
-set.seed(1)
-pcr.fit <- pcr(total_mg_pcu~., data = dat, scale = FALSE, validation = "CV")
-
-#summary(pcr.fit)
-
+# creating model with training data
 set.seed(5)
 pcr.fit <- pcr(total_mg_pcu ~., data = dat, subset = train,
                scale = FALSE, validation = "CV")
 validationplot(pcr.fit, val.type = "MSEP")
 
+# determining number of components to include
+
 cverr <- RMSEP(pcr.fit)$val[1,,]
 imin <- which.min(cverr) - 1
 # lowest cross-validation when M =5
+
 pcr.pred <- predict(pcr.fit, x[test,], ncomp = imin)
 mean((pcr.pred - y.test)^2)
 #MSE 386.0
@@ -462,16 +456,19 @@ summary(pcr.fit)
 ```
 
 
-Partial Least Squares is very similar to PCR in that it attempts to perform dimension reduction and then uses the output as the new regressors but the main difference is that the transformation is supervised meaning that if the directions with low variance have a high predictive power then they will not be dropped unlike with PCR. The regression was performed using the pcr() function from the {pls} package. Cross Validation was performed to select the optimum number of components to include (M=2). 
+Partial Least Squares is very similar to PCR in that it attempts to perform dimension reduction and then uses the output as the new regressors but the main difference is that the transformation is supervised meaning that if the directions with low variance have a high predictive power then they will not be dropped unlike with PCR. The regression was performed using the pcr() function from the {pls} package. Cross validation was performed to select the optimum number of components to include (M=2). 
 
 ```{r Partial Least Squares, include=FALSE}
-
+# creating model with training data
 set.seed(1)
 pls.fit <- plsr(total_mg_pcu~., data = dat, subset = train,
                 scale = FALSE, validation = "CV")
 summary(pls.fit)
+# selecting m value
 validationplot(pls.fit, val.type = "MSEP")
 # lowest cross validation error when m=2
+
+# calculating MSE
 pls.pred <- predict(pls.fit,x[test,], ncomp = 2)
 mean((pls.pred - y.test)^2)
 # MSE = 397.6
@@ -483,6 +480,7 @@ summary(pls.fit)
 
 Tree based methods were used to create further models. The trees were all trained on the training dataset and then predictions made on the test data to measure their performance. 
 A simple regression tree was built first using the tree() function from the {tree} package. Pruning was then performed using cross validation in order to limit overfitting. In this model cross validation selected 4 terminal nodes. 
+
 Bagging was then used to try and improve the accuracy of the regression tree as it can reduce the variance of the predictors. This was performed with the randomForest() function from the {randomForest} package. 
 As bagging improved the predictive accuracy of the model, Random Forest modeling using the same function was also performed using the default value for mtry of p/3 which worked out at 8.
 Boosting was performed using the gbm() function in the {gbm} package. n.trees was set to 5000 and the interaction depth to 6. 
@@ -490,14 +488,18 @@ Finally a Bayesian additive tree was created using the gbart() function from the
 
 
 ```{r Regression Tree, include=FALSE}
+# create tree using training data
+
 set.seed(1)
 tree <- tree(total_mg_pcu ~., data = dat, subset = train,
              control = tree.control(26, mincut = 0.1, minsize = 1, mindev = 0.01))
-             
+
+# view tree            
 summary(tree)
 plot(tree)
 text(tree, pretty = 0)
 
+# select pruning by cross validation
 cv <- cv.tree(tree)
 plot(cv$size, cv$dev, type = "b")
 cv
@@ -505,6 +507,8 @@ cv
 pruned.tree <- prune.tree(tree, best = 4)
 plot(pruned.tree)
 text(pruned.tree, pretty = 0)
+
+# calculate MSE
 
 yhat <- predict(pruned.tree, newdata = dat[-train,])
 plot(yhat, dat[-train,29])
@@ -514,25 +518,29 @@ mean((yhat - dat[-train,29])^2)
 
 
 ```{r Bagging, include=FALSE}
+# create bagging model with training data
 set.seed(1)
 bag<- randomForest(total_mg_pcu~., dat, mtry =28, importance = T,
                    subset = train)
 summary(bag)
+# generate predictions to calculate MSE
 yhat.bag<- predict(bag, newdata = dat[-train,])
 plot(yhat.bag, dat[-train,29])
 mean((yhat.bag -dat[-train,29])^2)
 #MSE = 232.1
-plot(bag$importance[,1])
-sort(bag$importance[,1])
+
+table(bag$importance[,1])
 
 final.predictions <- predict(bag, newdata = dat)
 ```
 
 
 ```{r Random Forest, include=FALSE}
+# create random forest model using training data
 set.seed(1)
 rf <- randomForest(total_mg_pcu~., dat, importance = T,
                    subset = train)
+#generate predictions
 yhat.rf <- predict(rf, newdata = dat[-train,])
 mean((yhat.rf - dat[-train,29])^2)
 plot(yhat.rf, dat[-train,29])
@@ -543,6 +551,7 @@ varImpPlot(rf)
 
 
 ```{r boosting, include=FALSE}
+# generate boosted model using training data
 set.seed(1)
 boost <- gbm(total_mg_pcu ~., data = dat[train,],
              distribution = "gaussian",
@@ -551,17 +560,17 @@ boost <- gbm(total_mg_pcu ~., data = dat[train,],
              shrinkage = 0.01,
              n.minobsinnode = 5)
 summary(boost)
-
+#  generate predictions and calculate MSE
 yhat.boost <- predict(boost,
                       newdata = dat[-train,],
                       n.trees = 5000)
 mean((yhat.boost- dat[-train,29])^2)
-#MSE 316.1
+#MSE 316.2
 ```
  
 
 ```{r Bayesian additive reg trees, include=FALSE}
-
+# create inputs for tree using test/train split
 x <- dat[,-29]
 y <- dat[,29]
 
@@ -570,9 +579,10 @@ ytrain <- y[train]
 xtest <- x[-train, ]
 ytest <- y[-train]
 
+# create BART model
 set.seed(1)
 bartfit <- gbart(xtrain, ytrain, x.test = xtest )
-
+# generate predictions and calculate MSE
 yhat.bart <- bartfit$yhat.test.mean
 mean((ytest - yhat.bart )^2)
 
@@ -584,12 +594,11 @@ bartfit$varcount.mean[ord]
 
 # 3 Results
 
-The calculated MSE for the above models are shown in Figure 4. The lowest MSE was found in the Best subsets and forward subsets when measured using cross validation. This however is an unfair comparison as the other model were all validated using test/train data. Bagging resulted in the lowest MSE for a model validated with test/train data. Even this lowest MSE of 232.1 suggests that the prediction of a farms antimicrobial usage would be out by 15.2mg/kg/PCU.
-
+The calculated MSE for the above models are shown in Figure 4. The lowest MSE was found in the best subsets and forward subsets when measured using cross validation. This however is an unfair comparison as the other models were all validated using test/train data. Bagging resulted in the lowest MSE for a model validated with test/train data at 232.1. A MSE of this magnitude tells us that the average prediction was incorrect by +/- 15.2mg/PCU which is quite a high margin when the target is <21mg/PCU.
 
 ```{r MSE results, echo=FALSE, fig.cap= "Figure 4: MSE for all models", fig.width = 7.5}
 models <- c("Complete Linear model", "Best Subsets Train/Test", "Forward Subsets Train/Test", "Backward Subsets Train/Test", "Best Subsets CV", "Forward Subsets CV", "Backward Subsets CV", "Ridge Regression", "Lasso", "PCR", "PLS", "Regression Tree", "Bagging", "Random Forest", "Boosting", "Bayesian Additive Reg. Tree")
-MSE <- c(3851.4, 336.1,336.1, 285.3, 209.5, 209.5, 275.3, 265.3, 244.3, 386.0, 397.6, 387.9, 232.1, 270.5,316.1, 283.3)
+MSE <- c(2401.0, 336.1,336.1, 319.0, 209.5, 209.5, 237.8, 265.2, 244.3, 386.0, 397.6, 387.9, 232.1, 270.5,316.2, 283.3)
 
 model.mse <- data.frame(models, MSE)
 data <- factor(model.mse$models,
@@ -602,19 +611,20 @@ ggplot(aes(x = MSE, y = models), data = model.mse) +
   theme_light()
 ```
 
+The bagging models %IncMSE and IncNodePurity are shown in Figure 5. Using the percentage increase in MSE figures the 5 most important variables for the model are *daystreatmast*, *bvdvacc*, *injectmast*, *halocur* and *diarrvacc*. 
+ 
+It is to be expected that variables such as *daystreatmast* and *injectmast* would affect a farms antimicrobial usage as they will directly increase a farms usage, and if we had information on a farms mastitis incidence it would be possible that the interaction between these variables would increase their predictive power. 
 ```{r Bagging Importance Plots, echo=FALSE, fig.cap= "Figure 5 : Bagging model importance", fig.height= 7, fig.width = 5}
 varImpPlot(bag, main = "")
 ```
 
-The bagging models %IncMSE and IncNodePurity are shown in Figure 5. Using the percentage increase in MSE figures the 5 most important variables for the model are *daystreatmast*, *halocur*, *IBRvacc*, *rat* and *injectmast*. The predictions made using this model compared to a farms actual are shown in Figure 6. This graph confirms what we found with the MSE namely that although there is reasonable predictions generated by the model particularly at high actual mg/kg/PCU the model is quite inaccurate. 
+The predictions made using this model compared to a farms actual are shown in Figure 6. This graph confirms  that although there is reasonable predictions generated by the model particularly at high actual mgPCU the model is quite inaccurate. 
 
-It is to be expected that variable such as *daystreatmast* and *injectmast* would affect a farms antimicrobial usage as they will directly increase a farms usage, and if we had information on a farms mastitis it would be possible that the interaction between these variables would increase their predictive power. 
-
-```{r Bagging predictions, echo=FALSE, fig.cap = "Figure 6 : Bagging Model's mg/kg/PCU predicted vs actual for complete dataset"}
+```{r Bagging predictions, echo=FALSE, fig.cap = "Figure 6 : Bagging Model's mg/PCU predicted vs actual for complete dataset"}
 plot(final.predictions, dat[,29],
     
-     ylab = "Actual mg/kg/PCU",
-     xlab = "Predicted mg/kg/PCU",
+     ylab = "Actual mg/PCU",
+     xlab = "Predicted mg/PCU",
      col = "goldenrod",
      xlim = c(0,90),
      pch = "*")
@@ -623,9 +633,21 @@ abline(a = 0, b = 1, col = "red")
     
 ```
 
-Although bagging produces the lowest MSE and so provides the prediction with the highest accuracy (Breiman, 1996) it can be argued that it a more useful model for the 1st outcome is our lasso model as by performing variable selection and reducing some coefficients to 0 it leaves us with a smaller list of coefficients which are important when determining a farms antimicrobial usage. Its predictions are shown in Figure 7 and it is follows a very similar pattern to the bagging model where it is relatively accurate at lower actual mg/kg/PCU but worsens as the values increase. The data in this area is relatively sparse as very few farms had a mg/kg/PCU of >50 and so it is difficult for the model to accurately model these,
+Although bagging produces the lowest MSE and so provides the prediction with the highest accuracy (Breiman, 1996) it can be argued that it a more useful model for our first outcome is our lasso model as by performing variable selection and reducing some coefficients to 0 it leaves us with a smaller list of coefficients which are important when determining a farms antimicrobial usage. The variables coefficents are shown in table 3 and the largest coefficients and so the biggest effect on the prediction were *wean2*, *daystreatmast*, *treatfoot1*, *bvdvaccY* and *wean3*. 
 
-The variables that had the largest coefficients and so the biggest effect on the prediction were *wean2*, *daystreatmast*, *treatfoot1*, *bvdvaccY* and *wean3*. 
+```{r lasso variables}
+lasso.var <- data.frame(names(lasso.coef),lasso.coef )
+
+rownames(lasso.var) <- NULL
+lasso.var <- lasso.var[-2,]
+lasso.var <- lasso.var %>%
+  arrange(desc(abs(lasso.coef)))
+kable(lasso.var, col.names = c("Variable", "Coefficient"), caption = "Table 3: Lasso model coefficients")
+```
+
+
+Its predictions are shown in Figure 7 and it is follows a very similar pattern to the bagging model where it is relatively accurate at lower actual mg/PCU but worsens as the values increase. The data in this area is relatively sparse as very few farms had a mg/PCU of >50 and so it is difficult for the model to accurately model these,
+
 
 ```{r Lasso Predictions, echo=FALSE, fig.cap="Figure 7: Lasso Model's mg/kg/PCU predicted vs actual for test dataset "}
 plot(lasso.final.pred,y,
@@ -640,15 +662,17 @@ abline(a = 0, b = 1, col = "red")
 
 # 4 Conclusions
 
-The factors on farm that have been identified as important predictors of a farms antimicrobial usage in the lasso model and the bagging model include weaning age, treatment length of mastitis and if they inject mastitis cases with antibiotics, halocur usage, IBR or BVD vaccination, the presence of rats and if they use a footbath to control lameness. These factors could be used when talking to farmer to identify farms that may require a more indepth discussion about their antimicobial usage and perhaps calculating their antimicrobial usage. Of course these factors are not all likely to be directly causing an increased usage of antibiotics but may just be correlated with other factors that increase usage.
+The factors on farm that have been identified as important predictors of a farms antimicrobial usage in the lasso model and the bagging model include weaning age, treatment length of mastitis and if they inject mastitis cases with antibiotics, halocur usage,  diarrhoea and BVD vaccination, and if they use a footbath to control lameness. These factors could be used when talking to farmer to identify farms that may require a more indepth discussion about their antimicobial usage and perhaps calculating their antimicrobial usage. Of course these factors are not all likely to be directly causing an increased usage of antibiotics but may just be correlated with other factors that increase usage.
 
-The second objective of creating a model that could accurately predict a farms antimicrobial usage. The best performing model was still not very accurate and so would not be recommended for estimating a farms mg/kg/PCU although it could be a useful starting point for engaging a farmer in a conversation based on a few simple questions rather than an in depth analysis of his figures.
+The second objective of creating a model that could accurately predict a farms antimicrobial usage. The best performing model was still not very accurate and so would not be recommended for estimating a farms mg/PCU although it could be a useful starting point for engaging a farmer in a conversation based on a few simple questions rather than an in depth analysis of his figures. To further validate the model a larger nationwide sample of farms could be tested using the model. This would test its ability to predict usage on a wider sample of farms and provide a valuable validation of the model.
 
 # 5 References
 
 Barnard, D.M., Germino, M.J., Pilliod, D.S., Arkle, R.S., Applestein, C., Davidson, B.E. and Fisk, M.R. (2019). Cannot see the random forest for the decision trees: selecting predictive models for restoration ecology. Restoration Ecology, 27(5), pp.1053–1063. doi:10.1111/rec.12938.
 
 Breiman, L. (1996). Bagging predictors. Machine Learning, 24(2), pp.123–140. doi:10.1007/bf00058655.
+
+Fox, J. and Weisberg, S. (2011). An R companion to applied regression. Los Angeles: Sage.
 
 Hennessey, M., Whatford, L., Payne-Gifford, S., Johnson, K.F., Van Winden, S., Barling, D. and Häsler, B. (2020). Antimicrobial & antiparasitic use and resistance in British sheep and cattle: a systematic review. Preventive Veterinary Medicine, 185, p.105174. doi:10.1016/j.prevetmed.2020.105174.
 
